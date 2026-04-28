@@ -9,12 +9,13 @@
   },
   "files": [
     "dist/",
-    "binaries/",
+    "scripts/",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
+    "postinstall": "node dist/download.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": ["bini", "server", "rust", "production"],
@@ -23,8 +24,6 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "os": ["win32", "darwin", "linux"],
-  "cpu": ["x64", "arm64"],
   "devDependencies": {
     "@types/node": "^25.6.0",
     "tsup": "^8.5.0",

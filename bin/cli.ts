@@ -1,12 +1,12 @@
-import { spawn } from 'node:child_process';
-import { join } from 'node:path';
-import { existsSync, chmodSync } from 'node:fs';
-import { platform, arch } from 'node:os';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+// NO shebang here - tsup will add it
+import { spawn } from 'child_process';
+import { join } from 'path';
+import { existsSync, chmodSync } from 'fs';
+import { platform, arch } from 'os';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = join(__filename, '..');
 
 const binaryMap: Record<string, string> = {
   'win32-x64': 'bini-rust-server-windows-x64.exe',
@@ -16,13 +16,11 @@ const binaryMap: Record<string, string> = {
 };
 
 function getBinaryPath(): string {
-  const currentPlatform = platform();
-  const currentArch = arch();
-  const key = `${currentPlatform}-${currentArch}`;
-  
+  const key = `${platform()}-${arch()}`;
   const binaryName = binaryMap[key];
+  
   if (!binaryName) {
-    console.error(`\x1b[31mUnsupported platform: ${currentPlatform}-${currentArch}\x1b[0m`);
+    console.error(`\x1b[31mUnsupported platform: ${key}\x1b[0m`);
     process.exit(1);
   }
   
@@ -63,8 +61,8 @@ Please reinstall:
     cwd: process.cwd(),
   });
   
-  child.on('close', (code) => process.exit(code ?? 0));
-  child.on('error', (err) => {
+  child.on('close', (code: number | null) => process.exit(code ?? 0));
+  child.on('error', (err: Error) => {
     console.error(`\x1b[31mFailed to start: ${err.message}\x1b[0m`);
     process.exit(1);
   });
