@@ -1,20 +1,19 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: {
-    cli: 'bin/cli.ts',
-    download: 'scripts/download.ts'
-  },
+  entry: ['bin/cli.ts'],
   format: ['esm'],
   dts: false,
   clean: true,
-  minify: false,
+  minify: true,
+  sourcemap: false,
   target: 'node20',
   platform: 'node',
+  shims: true,
+  keepNames: true,
   banner: {
     js: '#!/usr/bin/env node\n',
   },
   outDir: 'dist',
   splitting: false,
-  shims: true,
 });
