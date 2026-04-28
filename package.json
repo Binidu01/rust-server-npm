@@ -9,7 +9,9 @@
   },
   "files": [
     "dist/",
-    "binaries/"
+    "binaries/",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
