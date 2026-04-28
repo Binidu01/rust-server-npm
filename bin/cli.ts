@@ -1,4 +1,3 @@
-// NO shebang here - tsup will add it
 import { spawn } from 'child_process';
 import { join } from 'path';
 import { existsSync, chmodSync } from 'fs';
@@ -7,6 +6,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');
+const BINARIES_DIR = join(__dirname, 'binaries');
 
 const binaryMap: Record<string, string> = {
   'win32-x64': 'bini-rust-server-windows-x64.exe',
@@ -24,7 +24,7 @@ function getBinaryPath(): string {
     process.exit(1);
   }
   
-  return join(__dirname, '..', 'binaries', binaryName);
+  return join(BINARIES_DIR, binaryName);
 }
 
 function makeExecutable(binaryPath: string): void {
@@ -48,6 +48,7 @@ Binary should be at: ${binaryPath}
 
 Please reinstall:
   \x1b[36mnpm install bini-rust-server\x1b[0m
+  \x1b[36mpnpm add bini-rust-server\x1b[0m
 `);
     process.exit(1);
   }

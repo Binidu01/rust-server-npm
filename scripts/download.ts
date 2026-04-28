@@ -1,12 +1,17 @@
-import { createWriteStream, existsSync, mkdirSync, chmodSync } from 'fs';
-import { join } from 'path';
-import { get } from 'https';
-import { platform, arch } from 'os';
-import process from 'process';
+import { createWriteStream, existsSync, mkdirSync, chmodSync } from 'node:fs';
+import { join } from 'node:path';
+import { get } from 'node:https';
+import { platform, arch } from 'node:os';
+import { fileURLToPath } from 'node:url';
 
-const VERSION = '0.1.0';
+const VERSION = '0.1.2'; // Match your package version
 const REPO = 'Binidu01/bini-rust-server';
-const BINARIES_DIR = join(process.cwd(), 'node_modules', 'bini-rust-server', 'binaries');
+
+// Get the correct package directory (works with npm, pnpm, yarn)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = join(__filename, '..');
+const PACKAGE_DIR = join(__dirname, '..');
+const BINARIES_DIR = join(PACKAGE_DIR, 'binaries');
 
 const binaryMap: Record<string, string> = {
   'win32-x64': 'bini-rust-server-windows-x64.exe',
@@ -31,7 +36,14 @@ async function download(): Promise<void> {
     mkdirSync(BINARIES_DIR, { recursive: true });
   }
 
+  // Check if binary already exists
+  if (existsSync(binaryPath)) {
+    console.log(`✅ Binary already exists: ${binaryPath}`);
+    return;
+  }
+
   console.log(`📥 Downloading bini-rust-server for ${platform()}-${arch()}...`);
+  console.log(`   Destination: ${binaryPath}`);
   
   await new Promise<void>((resolve, reject) => {
     const file = createWriteStream(binaryPath);
@@ -60,7 +72,7 @@ async function download(): Promise<void> {
     request.on('error', reject);
   });
   
-  console.log('\n✅ Binary downloaded');
+  console.log('\n✅ Binary downloaded successfully');
   
   if (platform() !== 'win32') {
     chmodSync(binaryPath, 0o755);
@@ -68,6 +80,7 @@ async function download(): Promise<void> {
 }
 
 download().catch((err: Error) => {
-  console.error(`❌ Failed: ${err.message}`);
+  console.error(`❌ Failed to download binary: ${err.message}`);
+  console.error(`   You can manually download from: https://github.com/${REPO}/releases/download/v${VERSION}/`);
   process.exit(1);
 });
